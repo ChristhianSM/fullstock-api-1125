@@ -16,5 +16,9 @@ VALUES
   ('Tazas', 'tazas', '/images/tazas.jpg', 'Tazas con diseño de código', 'Tazas que combinan perfectamente con tu café matutino y tu pasión por la programación.'),
   ('Stickers', 'stickers', '/images/stickers.jpg', 'Stickers de desarrollo web', 'Personaliza tu espacio de trabajo con nuestros stickers únicos.');
 
+
+
+
+
 -- migrate:down
 DROP TABLE categories;

@@ -1,13 +1,13 @@
-import { Pool, type QueryResultRow } from "pg";
+import { type QueryResultRow } from "pg";
+import { query as PoolQuery } from "./connections/pool/conections.ts";
 
-export const pool = new Pool({
-  connectionString: process.env["DATABASE_URL"],
-});
-
-export function query<T extends QueryResultRow>(
-  text: string,
-  params?: unknown[],
-) {
-  console.log("Ejecutando la siguiente sentencia: ", text);
-  return pool.query<T>(text, params);
+export const query = async <T extends QueryResultRow> (querySQl : string)=> {
+  console.log("Conexion Test con POOL connection ....");
+  try {
+    const queryResult = await PoolQuery<T>(querySQl);
+    return  queryResult;
+  } catch (error) {
+    console.log("no fue posible conectarse con la BD",error);
+     throw Error("no fue posible conectarse con la BD");
+  }
 }
