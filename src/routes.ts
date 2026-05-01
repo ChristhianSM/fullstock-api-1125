@@ -9,4 +9,7 @@ router.get("/", (_req, res) => {
 
 router.get("/categories", categoryController.getCategories);
 
+// Otra ruta para obtener una categoria especifica
+router.get("/categories/:slug", categoryController.getCategory);
+
 export default router;
