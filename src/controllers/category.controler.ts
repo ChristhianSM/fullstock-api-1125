@@ -1,8 +1,21 @@
 import type {Request,Response } from "express";
 import * as categoryService from "../services/category.services.ts";
 
+import type { Category } from "../repositories/category.repository.ts";
+import { ApiError } from "../lib/errors.ts";
+
+interface queryParams {
+    slug :Category["slug"]
+}
+
 export async function getCategories(_req : Request,res:Response) {
 const categories = await categoryService.getAll();
 res.status(200).json({data:categories,status:"success"});
-    
+}
+
+export async function getCategoryBySlug(req:Request<{slug:queryParams["slug"]}>,res:Response) {
+const slug = req.params.slug;
+const category = await categoryService.getBySlug(slug);
+if(!category) throw new ApiError(404,"No se encontro categoria");
+ res.status(200).json({data:category,status:"success"});
 }

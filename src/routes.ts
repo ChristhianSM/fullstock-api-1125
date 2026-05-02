@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getCategories } from "./controllers/category.controler.ts";
+import { getCategories,getCategoryBySlug } from "./controllers/category.controler.ts";
 const router = Router();
 
 router.get("/", (_req, res) => {
@@ -7,4 +7,5 @@ router.get("/", (_req, res) => {
 });
 
 router.get("/categories",getCategories);
+router.get("/category/:slug",getCategoryBySlug);
 export default router;
