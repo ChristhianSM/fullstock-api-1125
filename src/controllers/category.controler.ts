@@ -15,7 +15,14 @@ res.status(200).json({data:categories,status:"success"});
 
 export async function getCategoryBySlug(req:Request<{slug:queryParams["slug"]}>,res:Response) {
 const slug = req.params.slug;
-const category = await categoryService.getBySlug(slug);
+const category = await categoryService.getCategoryBySlug(slug);
+if(!category) throw new ApiError(404,"No se encontro categoria");
+ res.status(200).json({data:category,status:"success"});
+}
+
+export async function getCategoryById(req:Request<{slug:queryParams["slug"]}>,res:Response) {
+const slug = req.params.slug;
+const category = await categoryService.getCategoryBySlug(slug);
 if(!category) throw new ApiError(404,"No se encontro categoria");
  res.status(200).json({data:category,status:"success"});
 }
