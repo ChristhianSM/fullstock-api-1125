@@ -8,7 +8,7 @@ export async function getCategories(_req: Request, res: Response) {
   res.status(200).json({ status: "success", data: categories });
 }
 
-interface SlugParams {
+export interface SlugParams {
   slug: CategoryRow["slug"];
 }
 
