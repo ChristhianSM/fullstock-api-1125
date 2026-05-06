@@ -17,6 +17,8 @@ export interface ProductRow {
 
 export type Product = ReturnType<typeof camelCaseKeys<ProductRow>>;
 
+export type ProductSlug = ProductRow["slug"];
+
 export async function getByCategorySlug(
   categorySlug: categoryRepository.CategoryRow["slug"],
 ) {
@@ -30,4 +32,14 @@ export async function getByCategorySlug(
   console.log(result);
 
   return camelCaseKeys(result.rows);
+}
+
+export async function findBySlug(slug: ProductSlug): Promise<Product | null> {
+  const result = await db.query<ProductRow>(
+    `
+    SELECT * FROM products WHERE slug = $1
+    `,
+    [slug],
+  );
+  return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }

@@ -20,5 +20,6 @@ router.get(
 );
 
 // Obtener detalle de un producto.
+router.get("/products/:slug", productController.getProduct);
 
 export default router;

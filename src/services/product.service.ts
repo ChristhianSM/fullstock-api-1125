@@ -6,3 +6,9 @@ export function getProductsByCategory(
 ) {
   return productRepository.getByCategorySlug(categorySlug);
 }
+
+export async function getProduct(
+  slug: productRepository.ProductSlug,
+): Promise<productRepository.Product | null> {
+  return productRepository.findBySlug(slug);
+}
