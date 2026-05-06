@@ -5,18 +5,35 @@ import * as categoryService from "../services/category.service.ts";
 import * as productService from "../services/product.service.ts";
 import * as categoryController from "./category.controller.ts";
 
+export interface Filters {
+  minPrice?: number;
+  maxPrice?: number;
+}
+
 export async function getProductsByCategory(
-  req: Request<categoryController.SlugParams>,
+  req: Request<
+    categoryController.SlugParams,
+    unknown,
+    unknown,
+    { minPrice?: string; maxPrice?: string }
+  >,
   res: Response,
 ) {
   const { slug } = req.params;
+  const { minPrice, maxPrice } = req.query;
+  const filters: Filters = {};
+
+  if (minPrice !== undefined) filters.minPrice = Number(minPrice);
+
+  if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice);
+
   const category = await categoryService.getCategory(slug);
 
   if (!category) {
     throw new ApiError(404, "Categoria no encontrada");
   }
 
-  const products = await productService.getProductsByCategory(slug);
+  const products = await productService.getProductsByCategory(slug, filters);
 
   res.json({ status: "success", data: products });
 }
