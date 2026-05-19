@@ -1,0 +1,25 @@
+info:
+  name: update-quantity
+  type: http
+  seq: 1
+
+http:
+  method: PATCH
+  url: "{{base_url}}/api/cart/items/:id"
+  params:
+    - name: id
+      value: "50"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "quantity": 100
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -24,10 +24,11 @@ export async function create(
     [cartId, productId, quantity],
   );
 
-  if (result.rows[0] === undefined)
-    throw new Error("Insercion no devolvio una fila");
+  const row = result.rows[0];
 
-  return camelCaseKeys(result.rows[0]);
+  if (row === undefined) throw new Error("Insercion no devolvio una fila");
+
+  return camelCaseKeys(row);
 }
 
 export async function findByCartAndProduct(
@@ -56,31 +57,23 @@ export async function findById(id: number): Promise<CartItem | null> {
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }
 
-export async function updateQuantity(
-  id: number,
-  quantity: number,
-): Promise<CartItem> {
-  // Completa el cuerpo de la función.
+export async function updateQuantity(id: number, quantity: number) {
   const result = await db.query<CartItemRow>(
     `
-    UPDATE cart_items
-    SET quantity = $1, update_at = NOW() 
-    WHERE id = $2 RETURNING *`,
+    UPDATE cart_items SET quantity = $1, update_at = NOW()
+    WHERE id = $2
+    RETURNING *
+    `,
     [quantity, id],
   );
 
-  if (result.rows[0] === undefined)
-    throw new Error("Actualización no devolvio una fila");
+  const row = result.rows[0];
 
-  return camelCaseKeys(result.rows[0]);
+  if (row === undefined) throw new Error("Actualizacion no devolvio una fila");
+
+  return camelCaseKeys(row);
 }
 
 export async function remove(id: number): Promise<void> {
-  // Completa el cuerpo de la función.
-  await db.query<CartItemRow>(
-    `
-    DELETE FROM cart_items
-    WHERE id = $1`,
-    [id],
-  );
+  await db.query("DELETE FROM cart_items WHERE id = $1", [id]);
 }

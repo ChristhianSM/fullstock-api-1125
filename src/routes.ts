@@ -9,6 +9,7 @@ router.get("/", (_req, res) => {
   res.json({ message: "Fulltock Api" });
 });
 
+// Obtener todas las categorias
 router.get("/categories", categoryController.getCategories);
 
 // Otra ruta para obtener una categoria especifica
@@ -25,5 +26,11 @@ router.get("/products/:slug", productController.getProduct);
 
 // Agregar un producto al carrito
 router.post("/cart/items", cartItemController.createCartItem);
+
+// Actualizar cantidad de un item del carrito
+router.patch("/cart/items/:id", cartItemController.updateCartItem);
+
+// Eliminar un item del carrito
+router.delete("/cart/items/:id", cartItemController.deleteCartItem);
 
 export default router;

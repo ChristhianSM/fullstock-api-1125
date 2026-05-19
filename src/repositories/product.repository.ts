@@ -25,7 +25,6 @@ export async function getByCategorySlug(
   filters: productController.Filters,
 ) {
   const { minPrice, maxPrice } = filters;
-  console.log(filters);
 
   // Contruimos la consulta dinamica
   const params: (string | number)[] = [categorySlug];

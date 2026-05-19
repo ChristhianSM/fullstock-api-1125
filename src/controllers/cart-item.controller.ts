@@ -51,3 +51,69 @@ export async function createCartItem(
 
   res.status(201).json({ status: "success", data: item });
 }
+
+export async function updateCartItem(
+  req: Request<{ id: string }, unknown, { quantity: number }>,
+  res: Response,
+) {
+  const cartId = req.session.cartId;
+
+  // Verificar si el usuario cuenta con un cartId en su sesion
+  if (cartId === undefined) {
+    throw new ApiError(404, "Carrito no existe");
+  }
+
+  // Verificar si el carrito existe en la base de datos
+  const cart = await cartService.getCart(cartId);
+
+  if (cart === null) {
+    delete req.session.cartId;
+    throw new ApiError(409, "El carrito de la sesion ya no existe");
+  }
+
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    throw new ApiError(400, "Id debe ser un numero entero positivo");
+  }
+
+  const quantity = Number(req.body.quantity);
+  if (!Number.isInteger(quantity) || quantity < 1) {
+    throw new ApiError(400, "La cantidad debe ser un numero entero positivo");
+  }
+
+  const item = await cartItemService.updateCartItemQuantity(
+    cartId,
+    id,
+    quantity,
+  );
+
+  res.status(200).json({ status: "success", data: item });
+}
+
+export async function deleteCartItem(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  const cartId = req.session.cartId;
+
+  // Verificar si el usuario cuenta con un cartId en su sesion
+  if (cartId === undefined) {
+    throw new ApiError(404, "Carrito no existe");
+  }
+
+  // Verificar si el carrito existe en la base de datos
+  const cart = await cartService.getCart(cartId);
+
+  if (cart === null) {
+    delete req.session.cartId;
+    throw new ApiError(409, "El carrito de la sesion ya no existe");
+  }
+
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    throw new ApiError(400, "Id debe ser un numero entero positivo");
+  }
+
+  await cartItemService.deleteCartItem(cartId, id);
+  res.status(204).send();
+}

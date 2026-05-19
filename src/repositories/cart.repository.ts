@@ -29,12 +29,5 @@ export async function findById(id: number): Promise<Cart | null> {
 }
 
 export async function touch(id: number): Promise<void> {
-  // Completa el cuerpo de la función.
-  await db.query(
-    `
-      UPDATE carts
-      SET update_at = NOW() 
-      WHERE id = $1`,
-    [id],
-  );
+  await db.query("UPDATE carts SET update_at = NOW() WHERE id = $1", [id]);
 }

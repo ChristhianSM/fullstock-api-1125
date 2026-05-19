@@ -1,5 +1,5 @@
 info:
-  name: create-cart-items
+  name: create-item-cart
   type: http
   seq: 1
 
@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "productId": 4,
-        "quantity": 1
+        "productId": 5,
+        "quantity": 10
       }
   auth: inherit
 
@@ -20,4 +20,3 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-​
