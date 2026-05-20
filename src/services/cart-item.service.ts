@@ -2,6 +2,19 @@ import { ApiError } from "../lib/errors.ts";
 import * as cartItemRepository from "../repositories/cart-item.repository.ts";
 import * as cartRepository from "../repositories/cart.repository.ts";
 
+export interface HydratedCartItem {
+  id: number;
+  quantity: number;
+  lineTotal: number; // Subtotal
+  product: {
+    id: number;
+    title: string;
+    slug: string;
+    price: number;
+    imgSrc: string;
+  };
+}
+
 export async function createCartItem(
   productId: number,
   cartId: number,
@@ -43,4 +56,25 @@ export async function deleteCartItem(cartId: number, id: number) {
 
   await cartItemRepository.remove(id);
   await cartRepository.touch(cartId);
+}
+
+export async function getHydratedItemsByCartId(
+  cartId: number,
+): Promise<HydratedCartItem[]> {
+  const items = await cartItemRepository.getItemsWithProductsByCartId(cartId);
+  return items.map((item) => {
+    const { id, quantity, price, productId, title, slug, imgSrc } = item;
+    return {
+      id,
+      quantity,
+      lineTotal: price * quantity,
+      product: {
+        id: productId,
+        title,
+        slug,
+        price,
+        imgSrc,
+      },
+    };
+  });
 }
