@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as cartItemController from "./controllers/cart-item.controller.ts";
 import * as cartController from "./controllers/cart.controller.ts";
 import * as categoryController from "./controllers/category.controller.ts";
+import * as orderController from "./controllers/order.controller.ts";
 import * as productController from "./controllers/product.controller.ts";
 
 const router = Router();
@@ -36,5 +37,8 @@ router.delete("/cart/items/:id", cartItemController.deleteCartItem);
 
 // Obtener el carrito completo
 router.get("/cart", cartController.getCart);
+
+// Crear una orden
+router.post("/order", orderController.createOrder);
 
 export default router;

@@ -31,3 +31,7 @@ export async function findById(id: number): Promise<Cart | null> {
 export async function touch(id: number): Promise<void> {
   await db.query("UPDATE carts SET update_at = NOW() WHERE id = $1", [id]);
 }
+
+export async function remove(id: number): Promise<void> {
+  await db.query("DELETE FROM carts WHERE id = $1", [id]);
+}

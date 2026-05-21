@@ -1,0 +1,30 @@
+info:
+  name: create-order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/api/order"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "christhian2524@gmail.com",
+        "firstname": "Christhian",
+        "lastname": "Silupú Moscol",
+        "company": "Codeable",
+        "address" : "Piura Piura",
+        "city": "Piura",
+        "country": "Perú",
+        "region": "Piura",
+        "zipCode": "20000",
+        "phone": "959686193"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
