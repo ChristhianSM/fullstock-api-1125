@@ -8,7 +8,7 @@ http:
   url: "{{base_url}}/api/categories/:slug"
   params:
     - name: slug
-      value: polos
+      value: "12333"
       type: path
   auth: inherit
 

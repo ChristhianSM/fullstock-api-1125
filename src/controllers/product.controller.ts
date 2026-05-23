@@ -1,31 +1,24 @@
 import type { Request, Response } from "express";
 import { ApiError } from "../lib/errors.ts";
-import * as productRepository from "../repositories/product.repository.ts";
+import { slugParamsSchema } from "../schemas/params.schema.ts";
+import { getProductsQuerySchema } from "../schemas/product.schema.ts";
 import * as categoryService from "../services/category.service.ts";
 import * as productService from "../services/product.service.ts";
-import * as categoryController from "./category.controller.ts";
 
 export interface Filters {
   minPrice?: number;
   maxPrice?: number;
 }
 
-export async function getProductsByCategory(
-  req: Request<
-    categoryController.SlugParams,
-    unknown,
-    unknown,
-    { minPrice?: string; maxPrice?: string }
-  >,
-  res: Response,
-) {
-  const { slug } = req.params;
-  const { minPrice, maxPrice } = req.query;
+export async function getProductsByCategory(req: Request, res: Response) {
+  const { slug } = slugParamsSchema.parse(req.params);
+  const { minPrice, maxPrice } = getProductsQuerySchema.parse(req.query);
+
   const filters: Filters = {};
 
-  if (minPrice !== undefined) filters.minPrice = Number(minPrice);
+  if (minPrice !== undefined) filters.minPrice = minPrice;
 
-  if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice);
+  if (maxPrice !== undefined) filters.maxPrice = maxPrice;
 
   const category = await categoryService.getCategory(slug);
 
@@ -38,15 +31,8 @@ export async function getProductsByCategory(
   res.json({ status: "success", data: products });
 }
 
-export interface ProductSlugParams {
-  slug: productRepository.ProductSlug;
-}
-
-export async function getProduct(
-  req: Request<ProductSlugParams>,
-  res: Response,
-): Promise<void> {
-  const { slug } = req.params;
+export async function getProduct(req: Request, res: Response): Promise<void> {
+  const { slug } = slugParamsSchema.parse(req.params);
   const product = await productService.getProduct(slug);
   if (!product) {
     throw new ApiError(404, "El producto no existe");

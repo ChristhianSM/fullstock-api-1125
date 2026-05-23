@@ -26,6 +26,7 @@ export async function createCartItem(
     cartId,
   );
   if (productFind) {
+    console.log("first");
     throw new ApiError(409, "El producto ya existe en el carrito");
   }
 

@@ -1,29 +1,15 @@
 import type { Request, Response } from "express";
 import { ApiError } from "../lib/errors.ts";
+import {
+  createCartItemBodySchema,
+  updateCartItemBodySchema,
+} from "../schemas/cart-item.schema.ts";
+import { idParamsSchema } from "../schemas/params.schema.ts";
 import * as cartItemService from "../services/cart-item.service.ts";
 import * as cartService from "../services/cart.service.ts";
 
-export async function createCartItem(
-  req: Request<
-    object,
-    unknown,
-    { productId: number; quantity: number },
-    unknown
-  >,
-  res: Response,
-) {
-  const { productId, quantity } = req.body;
-
-  if (typeof productId !== "number") {
-    throw new ApiError(400, "productId es requerido y debe ser un numero");
-  }
-
-  if (typeof quantity !== "number" || quantity < 1) {
-    throw new ApiError(
-      400,
-      "quantity es requerido y debe ser un numero positivo",
-    );
-  }
+export async function createCartItem(req: Request, res: Response) {
+  const { productId, quantity } = createCartItemBodySchema.parse(req.body);
 
   let cartId: number;
 
@@ -52,10 +38,7 @@ export async function createCartItem(
   res.status(201).json({ status: "success", data: item });
 }
 
-export async function updateCartItem(
-  req: Request<{ id: string }, unknown, { quantity: number }>,
-  res: Response,
-) {
+export async function updateCartItem(req: Request, res: Response) {
   const cartId = req.session.cartId;
 
   // Verificar si el usuario cuenta con un cartId en su sesion
@@ -71,15 +54,8 @@ export async function updateCartItem(
     throw new ApiError(409, "El carrito de la sesion ya no existe");
   }
 
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id) || id < 1) {
-    throw new ApiError(400, "Id debe ser un numero entero positivo");
-  }
-
-  const quantity = Number(req.body.quantity);
-  if (!Number.isInteger(quantity) || quantity < 1) {
-    throw new ApiError(400, "La cantidad debe ser un numero entero positivo");
-  }
+  const { id } = idParamsSchema.parse(req.params);
+  const { quantity } = updateCartItemBodySchema.parse(req.body);
 
   const item = await cartItemService.updateCartItemQuantity(
     cartId,
@@ -90,10 +66,7 @@ export async function updateCartItem(
   res.status(200).json({ status: "success", data: item });
 }
 
-export async function deleteCartItem(
-  req: Request<{ id: string }>,
-  res: Response,
-) {
+export async function deleteCartItem(req: Request, res: Response) {
   const cartId = req.session.cartId;
 
   // Verificar si el usuario cuenta con un cartId en su sesion
@@ -109,10 +82,7 @@ export async function deleteCartItem(
     throw new ApiError(409, "El carrito de la sesion ya no existe");
   }
 
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id) || id < 1) {
-    throw new ApiError(400, "Id debe ser un numero entero positivo");
-  }
+  const { id } = idParamsSchema.parse(req.params);
 
   await cartItemService.deleteCartItem(cartId, id);
   res.status(204).send();

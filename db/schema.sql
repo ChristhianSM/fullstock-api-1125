@@ -252,6 +252,17 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: session; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.session (
+    sid character varying NOT NULL,
+    sess json NOT NULL,
+    expire timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: cart_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -366,6 +377,21 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
+
+
+--
+-- Name: idx_session_expire; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_session_expire ON public.session USING btree (expire);
+
+
+--
 -- Name: cart_items cart_items_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -421,4 +447,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260505001214'),
     ('20260507001337'),
     ('20260508011643'),
-    ('20260521001623');
+    ('20260521001623'),
+    ('20260523004131');
