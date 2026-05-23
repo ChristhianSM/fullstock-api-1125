@@ -1,6 +1,7 @@
 import { ApiError } from "../lib/errors.ts";
 import * as cartItemRepository from "../repositories/cart-item.repository.ts";
 import * as cartRepository from "../repositories/cart.repository.ts";
+import * as productService from "../services/product.service.ts";
 
 export interface HydratedCartItem {
   id: number;
@@ -27,6 +28,12 @@ export async function createCartItem(
   if (productFind) {
     throw new ApiError(409, "El producto ya existe en el carrito");
   }
+
+  // Validar que el producto exista
+  const product = await productService.getProductById(productId);
+
+  if (product === null)
+    throw new ApiError(400, "Producto que desea agregar no existe");
 
   return cartItemRepository.create(productId, cartId, quantity);
 }

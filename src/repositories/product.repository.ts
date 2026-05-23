@@ -59,3 +59,17 @@ export async function findBySlug(slug: ProductSlug): Promise<Product | null> {
   );
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }
+
+export async function getById(id: number): Promise<Product | null> {
+  const result = await db.query<ProductRow>(
+    `
+    SELECT * FROM products
+    WHERE id = $1
+    `,
+    [id],
+  );
+
+  const row = result.rows[0];
+
+  return row !== undefined ? camelCaseKeys(row) : null;
+}

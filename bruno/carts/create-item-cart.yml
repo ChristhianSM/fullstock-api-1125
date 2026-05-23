@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "productId": 7,
-        "quantity": 10
+        "productId": 50,
+        "quantity": 20
       }
   auth: inherit
 

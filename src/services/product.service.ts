@@ -14,3 +14,9 @@ export async function getProduct(
 ): Promise<productRepository.Product | null> {
   return productRepository.findBySlug(slug);
 }
+
+export async function getProductById(
+  id: number,
+): Promise<productRepository.Product | null> {
+  return productRepository.getById(id);
+}

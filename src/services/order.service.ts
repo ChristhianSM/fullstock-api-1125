@@ -15,7 +15,6 @@ interface ShippingInfo {
   region: string;
   zipCode: string;
   phone: string;
-  status: string;
 }
 
 export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
@@ -25,14 +24,8 @@ export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
   if (cart.items.length === 0)
     throw new ApiError(400, "No hay productos en el carrito");
 
-  const createOrderData = { ...shippingInfo, total: cart.totalPrice };
-
-  // Comenzamos con las transacciones
-  const client = await db.pool.connect();
-
-  try {
-    await client.query("BEGIN");
-
+  const order = await db.withTransaction(async (client) => {
+    const createOrderData = { ...shippingInfo, total: cart.totalPrice };
     const order = await orderRepository.createOrder(createOrderData, client);
 
     const items = cart.items.map((item) => {
@@ -49,12 +42,8 @@ export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
     await orderRepository.createOrderItems(items, client);
     await cartRepository.remove(cart.id);
 
-    await client.query("COMMIT");
     return order;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
+
+  return order;
 }

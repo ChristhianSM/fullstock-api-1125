@@ -10,9 +10,9 @@ http:
     type: json
     data: |-
       {
-        "email": "christhian2524@gmail.com",
-        "firstname": "Christhian",
-        "lastname": "Silupú Moscol",
+        "email": "christhian2524",
+        "firstName": "Christhian",
+        "lastName": "Silupú Moscol",
         "company": "Codeable",
         "address" : "Piura Piura",
         "city": "Piura",
