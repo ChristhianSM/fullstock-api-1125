@@ -13,6 +13,7 @@ export interface Filters {
 export async function getProductsByCategory(req: Request, res: Response) {
   const { slug } = slugParamsSchema.parse(req.params);
   const { minPrice, maxPrice } = getProductsQuerySchema.parse(req.query);
+  console.log({ minPrice, maxPrice });
 
   const filters: Filters = {};
 

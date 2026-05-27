@@ -5,8 +5,14 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/categories/:slug/products"
+  url: "{{base_url}}/api/categories/:slug/products?minPrice=asdasd&maxPrice=asdasd"
   params:
+    - name: minPrice
+      value: asdasd
+      type: query
+    - name: maxPrice
+      value: asdasd
+      type: query
     - name: slug
       value: polos
       type: path

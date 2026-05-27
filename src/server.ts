@@ -1,8 +1,9 @@
 import app from "./app.ts";
 // import * as db from "./db/index.ts";
 import * as db from "./db/index.ts";
+import { env } from "./env.ts";
 
-const PORT = process.env["PORT"] ?? 3000;
+const PORT = env.PORT ?? 3000;
 
 try {
   await db.query("SELECT 1");
