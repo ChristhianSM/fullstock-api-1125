@@ -26,6 +26,8 @@ export function errorHandler(
       error: "Los datos no son validos",
       fields: z.flattenError(err).fieldErrors,
     });
+
+    return;
   }
 
   res.status(500).json({ error: "Error interno del servidor" });

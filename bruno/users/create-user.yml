@@ -1,0 +1,22 @@
+info:
+  name: create-user
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/api/users"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "christhian2524@gmail.com",
+        "password": "123456"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

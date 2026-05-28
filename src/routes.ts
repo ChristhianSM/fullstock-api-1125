@@ -4,6 +4,8 @@ import * as cartController from "./controllers/cart.controller.ts";
 import * as categoryController from "./controllers/category.controller.ts";
 import * as orderController from "./controllers/order.controller.ts";
 import * as productController from "./controllers/product.controller.ts";
+import * as sessionController from "./controllers/session.controller.ts";
+import * as userController from "./controllers/user.controller.ts";
 
 const router = Router();
 
@@ -40,5 +42,11 @@ router.get("/cart", cartController.getCart);
 
 // Crear una orden
 router.post("/order", orderController.createOrder);
+
+// Crear usuario
+router.post("/users", userController.createUser);
+
+// Crear session - Login
+router.post("/sessions", sessionController.createSession);
 
 export default router;
