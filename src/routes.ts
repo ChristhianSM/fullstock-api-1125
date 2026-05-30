@@ -46,7 +46,13 @@ router.post("/order", orderController.createOrder);
 // Crear usuario
 router.post("/users", userController.createUser);
 
+// Obtener la session activa del usuario.
+router.get("/users/me", userController.getCurrentUser);
+
 // Crear session - Login
 router.post("/sessions", sessionController.createSession);
+
+// Eliminar la session - Logout
+router.delete("/sessions", sessionController.deleteSession);
 
 export default router;

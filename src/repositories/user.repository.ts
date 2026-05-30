@@ -30,6 +30,20 @@ export async function create(email: string, password: string): Promise<User> {
   return camelCaseKey(row);
 }
 
+export async function findById(id: number): Promise<User | null> {
+  const result = await db.query<UserRow>(
+    `
+      SELECT * FROM users
+      WHERE id = $1
+    `,
+    [id],
+  );
+
+  const row = result.rows[0];
+
+  return row !== undefined ? camelCaseKey(row) : null;
+}
+
 export async function findByEmail(email: string): Promise<User | null> {
   const result = await db.query<UserRow>(
     `

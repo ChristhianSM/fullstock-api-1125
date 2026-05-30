@@ -21,6 +21,18 @@ export async function createUser(
   return publicUser;
 }
 
+export async function getUserById(
+  id: number,
+): Promise<userRepository.PublicUser | null> {
+  const user = await userRepository.findById(id);
+
+  if (user === null) return null;
+
+  const { password: _password, ...publicUser } = user;
+
+  return publicUser;
+}
+
 export async function verifyCredentials(
   email: string,
   plainPassword: string,
