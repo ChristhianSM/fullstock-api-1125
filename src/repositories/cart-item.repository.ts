@@ -1,4 +1,5 @@
 import camelCaseKeys from "camelcase-keys";
+import { type PoolClient } from "pg";
 import * as db from "../db/index.ts";
 
 interface CartItemRow {
@@ -44,15 +45,30 @@ export async function create(
 export async function findByCartAndProduct(
   productId: number,
   cartId: number,
+  client?: PoolClient,
 ): Promise<CartItem | null> {
   const result = await db.query<CartItemRow>(
     `
     SELECT * FROM cart_items
     WHERE cart_id = $1 AND product_id = $2;`,
     [cartId, productId],
+    client,
   );
 
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
+}
+
+export async function getByCartId(
+  cartId: number,
+  client?: PoolClient,
+): Promise<CartItem[]> {
+  const result = await db.query<CartItemRow>(
+    "SELECT * FROM cart_items WHERE cart_id = $1",
+    [cartId],
+    client,
+  );
+
+  return camelCaseKeys(result.rows);
 }
 
 export async function findById(id: number): Promise<CartItem | null> {
@@ -67,7 +83,11 @@ export async function findById(id: number): Promise<CartItem | null> {
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }
 
-export async function updateQuantity(id: number, quantity: number) {
+export async function updateQuantity(
+  id: number,
+  quantity: number,
+  client?: PoolClient,
+) {
   const result = await db.query<CartItemRow>(
     `
     UPDATE cart_items SET quantity = $1, update_at = NOW()
@@ -75,6 +95,7 @@ export async function updateQuantity(id: number, quantity: number) {
     RETURNING *
     `,
     [quantity, id],
+    client,
   );
 
   const row = result.rows[0];
@@ -101,4 +122,16 @@ export async function getItemsWithProductsByCartId(
   );
 
   return camelCaseKeys(result.rows);
+}
+
+export async function moveToCart(
+  id: number,
+  cartId: number,
+  client?: PoolClient,
+) {
+  await db.query(
+    "UPDATE cart_items SET cart_id = $1 WHERE id = $2",
+    [cartId, id],
+    client,
+  );
 }

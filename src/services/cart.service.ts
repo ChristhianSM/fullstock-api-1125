@@ -10,8 +10,10 @@ export interface HydratedCart {
   totalPrice: number;
 }
 
-export async function createCart(): Promise<cartRepository.Cart> {
-  return cartRepository.create();
+export async function createCart(
+  userId?: number,
+): Promise<cartRepository.Cart> {
+  return cartRepository.create(userId);
 }
 
 export async function getCart(id: number): Promise<cartRepository.Cart | null> {
@@ -38,4 +40,31 @@ export async function getHydratedCart(
   };
 
   return cartHydrated;
+}
+
+export async function resolveCart(
+  visitorCartId: number | undefined,
+  userId: number,
+) {
+  // Verificacamos si el usuario tiene carrito.
+  const userCart = await cartRepository.findByUserId(userId);
+
+  if (visitorCartId === undefined) {
+    return undefined;
+  }
+
+  // Cuando el usuario se registra en la aplicacion, no tiene carrito en su base de datos.
+  if (userCart === null) {
+    await cartRepository.linkToUser(visitorCartId, userId);
+
+    return visitorCartId;
+  }
+
+  await cartItemService.mergeVisitorCartIntoUserCart(
+    visitorCartId,
+    userCart.id,
+  );
+
+  // Retorna el id del carrito del usuario autenticado.
+  return userCart.id;
 }

@@ -1,3 +1,4 @@
+import * as db from "../db/index.ts";
 import { ApiError } from "../lib/errors.ts";
 import * as cartItemRepository from "../repositories/cart-item.repository.ts";
 import * as cartRepository from "../repositories/cart.repository.ts";
@@ -84,5 +85,47 @@ export async function getHydratedItemsByCartId(
         imgSrc,
       },
     };
+  });
+}
+
+export async function mergeVisitorCartIntoUserCart(
+  visitorCartId: number,
+  userCartId: number,
+): Promise<void> {
+  await db.withTransaction(async (client) => {
+    // Items del usuario anonimo
+    const visitorItems = await cartItemRepository.getByCartId(
+      visitorCartId,
+      client,
+    );
+
+    for (const visitorItem of visitorItems) {
+      // Verificamos que el item del usuario visitante, se encuentre en el carrito del usuario autenticado.
+      // Item del usuario autenticado.
+      const exitingItem = await cartItemRepository.findByCartAndProduct(
+        visitorItem.productId,
+        userCartId,
+        client,
+      );
+
+      if (exitingItem === null) {
+        // Si no existe el item del usuario invitado, entonces, movemos el item al carrito del usuario autenticado-
+        await cartItemRepository.moveToCart(visitorItem.id, userCartId, client);
+      } else {
+        // Si el producto del usuario visitante, si existe en el carrito del usuario autenticado, entonces, las cantidad
+        // de ambos productos se suman
+
+        const quantityFinal = exitingItem.quantity + visitorItem.quantity;
+
+        await cartItemRepository.updateQuantity(
+          exitingItem.id,
+          quantityFinal,
+          client,
+        );
+      }
+
+      // Eliminamos el carrito del usuario anonimo
+      await cartRepository.remove(visitorCartId, client);
+    }
   });
 }
