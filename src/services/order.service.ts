@@ -17,7 +17,15 @@ interface ShippingInfo {
   phone: string;
 }
 
-export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
+export type OrderWithItems = orderRepository.Order & {
+  items: orderRepository.OrderItem[];
+};
+
+export async function createOrder(
+  cartId: number,
+  shippingInfo: ShippingInfo,
+  userId?: number,
+) {
   const cart = await cartService.getHydratedCart(cartId);
 
   if (cart === null) throw new Error("No se encontro carrito");
@@ -25,7 +33,11 @@ export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
     throw new ApiError(400, "No hay productos en el carrito");
 
   const order = await db.withTransaction(async (client) => {
-    const createOrderData = { ...shippingInfo, total: cart.totalPrice };
+    const createOrderData: orderRepository.CreateOrderData = {
+      ...shippingInfo,
+      userId: userId ?? null,
+      total: cart.totalPrice,
+    };
     const order = await orderRepository.createOrder(createOrderData, client);
 
     const items = cart.items.map((item) => {
@@ -46,4 +58,16 @@ export async function createOrder(cartId: number, shippingInfo: ShippingInfo) {
   });
 
   return order;
+}
+
+export async function getOrderById(id: number): Promise<OrderWithItems | null> {
+  const order = await orderRepository.findById(id);
+  console.log(order);
+  if (order === null) return null;
+
+  const items = await orderRepository.findItemsByOrderId(id);
+  return {
+    ...order,
+    items,
+  };
 }

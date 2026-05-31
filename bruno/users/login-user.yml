@@ -1,7 +1,7 @@
 info:
   name: login-user
   type: http
-  seq: 1
+  seq: 5
 
 http:
   method: POST
@@ -20,4 +20,3 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-​

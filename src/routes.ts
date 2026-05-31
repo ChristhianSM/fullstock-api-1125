@@ -43,6 +43,9 @@ router.get("/cart", cartController.getCart);
 // Crear una orden
 router.post("/order", orderController.createOrder);
 
+// obtener una orden
+router.get("/order/:id", orderController.getOrder);
+
 // Crear usuario
 router.post("/users", userController.createUser);
 
@@ -54,5 +57,7 @@ router.post("/sessions", sessionController.createSession);
 
 // Eliminar la session - Logout
 router.delete("/sessions", sessionController.deleteSession);
+
+//
 
 export default router;

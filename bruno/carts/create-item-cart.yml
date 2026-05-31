@@ -1,23 +1,21 @@
 info:
   name: create-item-cart
   type: http
-  seq: 1
+  seq: 5
 
 http:
-  method: POST
+  method: post
   url: "{{base_url}}/api/cart/items"
   body:
     type: json
     data: |-
       {
-        "productId": 10,
-        "quantity": 20
+        "productId": 4,
+        "quantity": 4
       }
-  auth: inherit
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-​

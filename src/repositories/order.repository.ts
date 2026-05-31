@@ -4,6 +4,7 @@ import * as db from "../db/index.ts";
 
 interface OrderRow {
   id: number;
+  user_id: number | null;
   email: string;
   first_name: string;
   last_name: string;
@@ -58,6 +59,7 @@ export async function createOrder(
   client?: PoolClient,
 ): Promise<Order> {
   const {
+    userId,
     address,
     city,
     company,
@@ -72,11 +74,12 @@ export async function createOrder(
   } = data;
   const result = await db.query<OrderRow>(
     `
-    INSERT INTO orders(email, first_name, last_name, company, address, city, country, region, zip_code, phone, total)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    INSERT INTO orders(user_id, email, first_name, last_name, company, address, city, country, region, zip_code, phone, total)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     RETURNING *
     `,
     [
+      userId,
       email,
       firstName,
       lastName,
@@ -130,4 +133,26 @@ export async function createOrderItems(
   }
 
   return rows;
+}
+
+export async function findById(id: number): Promise<Order | null> {
+  const result = await db.query<OrderRow>(
+    "SELECT * FROM orders WHERE id = $1",
+    [id],
+  );
+
+  const row = result.rows[0];
+
+  return row !== undefined ? camelCaseKeys(row) : null;
+}
+
+export async function findItemsByOrderId(
+  orderId: number,
+): Promise<OrderItem[]> {
+  const result = await db.query<OrderItem>(
+    "SELECT * FROM order_items WHERE order_id = $1",
+    [orderId],
+  );
+
+  return camelCaseKeys(result.rows);
 }
