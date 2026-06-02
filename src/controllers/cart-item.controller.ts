@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { ApiError } from "../lib/errors.ts";
+import { requireCart } from "../guards/cart.guard.ts";
 import {
   createCartItemBodySchema,
   updateCartItemBodySchema,
@@ -11,27 +11,19 @@ import * as cartService from "../services/cart.service.ts";
 export async function createCartItem(req: Request, res: Response) {
   const { productId, quantity } = createCartItemBodySchema.parse(req.body);
 
-  let cartId: number;
+  let cart;
 
   if (req.session.cartId !== undefined) {
-    // Buscamos el carrito que le pertenece al usuario
-    const cart = await cartService.getCart(req.session.cartId);
-    if (cart === null) {
-      delete req.session.cartId; // Limpiamos el cartId De la session
-      throw new ApiError(409, "El carrito de la session ya no existe");
-    }
-
-    cartId = cart.id;
+    cart = await requireCart(req);
   } else {
-    const cart = await cartService.createCart(req.session.userId);
+    cart = await cartService.createCart(req.session.userId);
     req.session.cartId = cart.id;
-    cartId = cart.id;
   }
 
   // Crear un cart-item
   const item = await cartItemService.createCartItem(
     productId,
-    cartId,
+    cart.id,
     quantity,
   );
 
@@ -39,26 +31,13 @@ export async function createCartItem(req: Request, res: Response) {
 }
 
 export async function updateCartItem(req: Request, res: Response) {
-  const cartId = req.session.cartId;
-
-  // Verificar si el usuario cuenta con un cartId en su sesion
-  if (cartId === undefined) {
-    throw new ApiError(404, "Carrito no existe");
-  }
-
-  // Verificar si el carrito existe en la base de datos
-  const cart = await cartService.getCart(cartId);
-
-  if (cart === null) {
-    delete req.session.cartId;
-    throw new ApiError(409, "El carrito de la sesion ya no existe");
-  }
+  const cart = await requireCart(req);
 
   const { id } = idParamsSchema.parse(req.params);
   const { quantity } = updateCartItemBodySchema.parse(req.body);
 
   const item = await cartItemService.updateCartItemQuantity(
-    cartId,
+    cart.id,
     id,
     quantity,
   );
@@ -67,23 +46,10 @@ export async function updateCartItem(req: Request, res: Response) {
 }
 
 export async function deleteCartItem(req: Request, res: Response) {
-  const cartId = req.session.cartId;
-
-  // Verificar si el usuario cuenta con un cartId en su sesion
-  if (cartId === undefined) {
-    throw new ApiError(404, "Carrito no existe");
-  }
-
-  // Verificar si el carrito existe en la base de datos
-  const cart = await cartService.getCart(cartId);
-
-  if (cart === null) {
-    delete req.session.cartId;
-    throw new ApiError(409, "El carrito de la sesion ya no existe");
-  }
+  const cart = await requireCart(req);
 
   const { id } = idParamsSchema.parse(req.params);
 
-  await cartItemService.deleteCartItem(cartId, id);
+  await cartItemService.deleteCartItem(cart.id, id);
   res.status(204).send();
 }

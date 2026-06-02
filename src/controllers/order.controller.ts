@@ -1,28 +1,15 @@
 import type { Request, Response } from "express";
+import { requireCart } from "../guards/cart.guard.ts";
 import { ApiError } from "../lib/errors.ts";
 import { createOrderBodySchema } from "../schemas/order.schema.ts";
 import { idParamsSchema } from "../schemas/params.schema.ts";
-import * as cartService from "../services/cart.service.ts";
 import * as orderService from "../services/order.service.ts";
 import * as userService from "../services/user.service.ts";
 
 export async function createOrder(req: Request, res: Response) {
-  const cartId = req.session.cartId;
   const userId = req.session.userId;
 
-  if (cartId === undefined) {
-    throw new ApiError(400, "El carrito no existe");
-  }
-
-  const cart = await cartService.getCart(cartId);
-
-  if (cart === null) {
-    delete req.session.cartId;
-    throw new ApiError(
-      409,
-      "El carrito de la sesion ya no existe en la base de datos",
-    );
-  }
+  const cart = await requireCart(req);
 
   // Validar el body
   const body = createOrderBodySchema.parse(req.body);
@@ -33,7 +20,7 @@ export async function createOrder(req: Request, res: Response) {
     body.email = user.email;
   }
 
-  const order = await orderService.createOrder(cartId, body, userId);
+  const order = await orderService.createOrder(cart.id, body, userId);
   req.session.lastOrderId = order.id;
 
   delete req.session.cartId;

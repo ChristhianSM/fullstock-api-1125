@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "productId": 4,
+        "productId": 7,
         "quantity": 4
       }
 
