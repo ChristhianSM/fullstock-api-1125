@@ -99,6 +99,8 @@ export async function mergeVisitorCartIntoUserCart(
       client,
     );
 
+    console.log(visitorItems);
+
     for (const visitorItem of visitorItems) {
       // Verificamos que el item del usuario visitante, se encuentre en el carrito del usuario autenticado.
       // Item del usuario autenticado.
@@ -107,6 +109,8 @@ export async function mergeVisitorCartIntoUserCart(
         userCartId,
         client,
       );
+
+      console.log(exitingItem);
 
       if (exitingItem === null) {
         // Si no existe el item del usuario invitado, entonces, movemos el item al carrito del usuario autenticado-
@@ -123,9 +127,9 @@ export async function mergeVisitorCartIntoUserCart(
           client,
         );
       }
-
-      // Eliminamos el carrito del usuario anonimo
-      await cartRepository.remove(visitorCartId, client);
     }
+
+    // Eliminamos el carrito del usuario anonimo
+    await cartRepository.remove(visitorCartId, client);
   });
 }
